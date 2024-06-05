@@ -99,23 +99,23 @@ def main(username, token, owners, output_file=None):
     )
 
     # Prepare the list of repositories with PRs needing review for output
-    formatted_output = []
+    repos_with_needed_review_list = []
 
     # Print repositories based on the sorted order
     for repo_name, info in sorted_repos:
         if info['has_needing_review']:  # Check if review is needed
             print(f'Repository: {repo_name}')
             pull_requests = get_open_pull_requests(repo_name, headers)
-            formatted_output.append(f'Repository: {repo_name}')
+            repos_with_needed_review_list.append(f'Repository: {repo_name}')
             for pr in pull_requests:
                 if needs_review(pr):
                     print(f'  PR #{pr["number"]} needs review: {pr["html_url"]}')
-                    formatted_output.append(f'  PR #{pr["number"]} needs review: {pr["html_url"]}')
+                    repos_with_needed_review_list.append(f'  PR #{pr["number"]} needs review: {pr["html_url"]}')
 
     # Save the formatted output to a file if output_file is provided
     if output_file:
         with open(output_file, "w", encoding="utf-8") as f:
-            json.dump({"formatted_output": formatted_output}, f, indent=4)
+            json.dump({"repos_with_needed_review_list": repos_with_needed_review_list}, f, indent=4)
         print(f"\nFormatted output has been saved to {output_file}")
 
 
