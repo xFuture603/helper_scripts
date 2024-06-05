@@ -1,6 +1,10 @@
 # GitHub Pull Request Review Checker
 
-This script fetches all open pull requests from specified GitHub user and organization accounts, and determines which pull requests need a review. It can handle both personal and organization repositories, including private ones.
+This script fetches all open pull requests from specified GitHub user and organization accounts and determines which pull requests need a review. It can handle both personal and organizational repositories, including private ones.
+
+## Use Cases
+
+You could use this script if you have a terminal-focused workflow, or like I do in a GitHub Action, to send a message to your chat server with all the open pull requests that need a review in your project.
 
 ## Requirements
 
