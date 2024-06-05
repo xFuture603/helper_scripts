@@ -1,18 +1,24 @@
 #!/usr/bin/python3
 
-import requests
-import argparse
+"""
+A script to gather open pull requests from github.com that are in need of a review.
+"""
 import json
+import argparse
+import requests
 
 # GitHub API base URL
 BASE_URL = "https://api.github.com"
+
+# Define a timeout for requests in seconds
+TIMEOUT = 30
 
 
 def get_user_repos(headers):
     """Get all repositories owned by the user (including private ones)"""
     url = f"{BASE_URL}/user/repos"
     params = {"visibility": "all", "affiliation": "owner"}
-    response = requests.get(url, headers=headers, params=params)
+    response = requests.get(url, headers=headers, params=params, timeout=TIMEOUT)
     response.raise_for_status()
     return response.json()
 
@@ -21,7 +27,7 @@ def get_org_repos(org, headers):
     """Get all repositories for a given organization (including private ones)"""
     url = f"{BASE_URL}/orgs/{org}/repos"
     params = {"visibility": "all"}
-    response = requests.get(url, headers=headers, params=params)
+    response = requests.get(url, headers=headers, params=params, timeout=TIMEOUT)
     response.raise_for_status()
     return response.json()
 
@@ -30,7 +36,7 @@ def get_open_pull_requests(repo_full_name, headers):
     """Get all open pull requests for a given repository"""
     url = f"{BASE_URL}/repos/{repo_full_name}/pulls"
     params = {"state": "open"}
-    response = requests.get(url, headers=headers, params=params)
+    response = requests.get(url, headers=headers, params=params, timeout=TIMEOUT)
     response.raise_for_status()
     return response.json()
 
@@ -41,6 +47,16 @@ def needs_review(pull_request):
 
 
 def main(username, token, owners, output_file=None):
+    """
+    Main function to fetch open pull requests that need review.
+
+    Args:
+        username (str): GitHub username.
+        token (str): GitHub personal access token.
+        owners (list of str): List of user accounts and organization accounts to scan.
+        output_file (str, optional): File to save formatted output. Defaults to None.
+
+    """
     # Define headers for API requests
     headers = {
         "Authorization": f"token {token}",
@@ -98,7 +114,7 @@ def main(username, token, owners, output_file=None):
 
     # Save the formatted output to a file if output_file is provided
     if output_file:
-        with open(output_file, "w") as f:
+        with open(output_file, "w", encoding="utf-8") as f:
             json.dump({"formatted_output": formatted_output}, f, indent=4)
         print(f"\nFormatted output has been saved to {output_file}")
 
@@ -107,8 +123,14 @@ if __name__ == "__main__":
     parser = argparse.ArgumentParser(
         description="Fetch open pull requests that need review."
     )
-    parser.add_argument("--username", required=True, help="GitHub username")
-    parser.add_argument("--token", required=True, help="GitHub personal access token")
+    parser.add_argument("--username",
+                        required=True,
+                        help="GitHub username"
+    )
+    parser.add_argument("--token",
+                        required=True,
+                        help="GitHub personal access token"
+    )
     parser.add_argument(
         "--owners",
         nargs="+",
@@ -116,7 +138,8 @@ if __name__ == "__main__":
         help="List of user accounts and organization accounts to scan",
     )
     parser.add_argument(
-        "--output-file", help="File to save formatted output"
+        "--output-file",
+        help="File to save formatted output"
     )
 
     args = parser.parse_args()
