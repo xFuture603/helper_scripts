@@ -7,7 +7,6 @@ This script fetches all open pull requests from specified GitHub user and organi
 - Python 3
 - `requests` library
 - `argparse` library
-- `json` library
 
 You can install the required libraries using:
 
