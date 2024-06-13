@@ -3,6 +3,7 @@
 A collection of various helper scripts that I use.
 
 * [Send reminder for pull requests that need review](pr_review/README.md)
+* [Search subreddits for specific string](search_reddit/README.md)
 
 Note: Have a look at the README files in the specific subdirectories for documentation.
 
