@@ -1,2 +1,2 @@
-praw
-colorama
+praw==7.7.1
+colorama==0.4.6
