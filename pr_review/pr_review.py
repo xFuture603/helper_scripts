@@ -3,6 +3,7 @@
 """
 A script to gather open pull requests from github.com that are in need of a review.
 """
+
 import json
 import argparse
 import requests
