@@ -6,7 +6,7 @@ but only for specific requirement files
 """
 
 import sys
-import pkg_resources
+from importlib.metadata import distributions
 from packaging.requirements import Requirement
 
 def read_requirements(file_path):
@@ -30,10 +30,7 @@ def get_installed_packages():
     Returns:
         dict: A dictionary where keys are package names and values are versions.
     """
-    installed_packages = pkg_resources.working_set
-    if not isinstance(installed_packages, list):
-        installed_packages = list(installed_packages)
-    return {pkg.key: pkg.version for pkg in installed_packages}
+    return {dist.metadata['Name'].lower(): dist.version for dist in distributions()}
 
 def main(req_file):
     """
