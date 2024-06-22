@@ -11,9 +11,13 @@ import re
 import argparse
 
 # Set up command-line argument parsing
-parser = argparse.ArgumentParser(description='Generate a LogSeq page with links to outdated pages.')
-parser.add_argument('--logseq_path', type=str, help='Path to your LogSeq graph')
-parser.add_argument('--days_threshold', type=int, help='Number of days to consider a page outdated')
+parser = argparse.ArgumentParser(
+    description="Generate a LogSeq page with links to outdated pages."
+)
+parser.add_argument("--logseq_path", type=str, help="Path to your LogSeq graph")
+parser.add_argument(
+    "--days_threshold", type=int, help="Number of days to consider a page outdated"
+)
 
 args = parser.parse_args()
 logseq_path = args.logseq_path
@@ -21,7 +25,7 @@ days_threshold = args.days_threshold
 
 # Regex pattern to exclude pages that start with a date in:
 # YYYY-MM-DD, YYYY_MM_DD, or journals_YYYY_MM_DD format
-exclude_pattern = re.compile(r'^(journals_)?\d{4}[-_]\d{2}[-_]\d{2}.*$')
+exclude_pattern = re.compile(r"^(journals_)?\d{4}[-_]\d{2}[-_]\d{2}.*$")
 
 # Get current date
 now = datetime.datetime.now()
@@ -44,9 +48,11 @@ for root, dirs, files in os.walk(logseq_path):
 
 # Generate a LogSeq page with links to outdated pages
 output_path = os.path.join(logseq_path, "outdated-pages.md")
-with open(output_path, "w", encoding='utf-8') as f:
+with open(output_path, "w", encoding="utf-8") as f:
     f.write(f"# Pages not edited in the last {days_threshold} days\n")
     for page_name, mod_date in pages:
-        f.write(f"- [[{page_name}]] - last edited at {mod_date.strftime('%Y-%m-%d %H:%M:%S')}\n")
+        f.write(
+            f"- [[{page_name}]] - last edited at {mod_date.strftime('%Y-%m-%d %H:%M:%S')}\n"
+        )
 
 print(f"Generated {output_path} with {len(pages)} outdated pages.")

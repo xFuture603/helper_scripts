@@ -10,14 +10,17 @@ import os
 import subprocess
 import sys
 
+
 # ANSI color codes for terminal output
 class colors:
     """
     Declare color variables
     """
-    RED = '\033[91m'
-    GREEN = '\033[92m'
-    ENDC = '\033[0m'
+
+    RED = "\033[91m"
+    GREEN = "\033[92m"
+    ENDC = "\033[0m"
+
 
 def list_installed_apps(applications_path):
     """
@@ -29,8 +32,9 @@ def list_installed_apps(applications_path):
     Returns:
         list: List of installed application filenames ending with '.app'.
     """
-    apps = [f for f in os.listdir(applications_path) if f.endswith('.app')]
+    apps = [f for f in os.listdir(applications_path) if f.endswith(".app")]
     return apps
+
 
 def check_cask_available(app_name):
     """
@@ -43,12 +47,10 @@ def check_cask_available(app_name):
         bool: True if a Cask is available, False otherwise.
     """
     result = subprocess.run(
-        ["brew", "search", app_name],
-        capture_output=True,
-        text=True,
-        check=False
+        ["brew", "search", app_name], capture_output=True, text=True, check=False
     )
     return app_name in result.stdout.split()
+
 
 def install_or_adopt_app(app_name, install_dir):
     """
@@ -66,21 +68,27 @@ def install_or_adopt_app(app_name, install_dir):
             ["brew", "install", "--cask", "--adopt", app_name, "--appdir", install_dir],
             capture_output=True,
             text=True,
-            check=True
+            check=True,
         )
         if result.returncode != 0:
             raise subprocess.CalledProcessError(
-                result.returncode, result.args, output=result.stdout, stderr=result.stderr
-                )
+                result.returncode,
+                result.args,
+                output=result.stdout,
+                stderr=result.stderr,
+            )
         return True
     except subprocess.CalledProcessError as e:
         # Check if the error is due to existing app conflict
         if "Error: It seems there is already an App at" in e.stderr:
-            print(f"Skipping {app_name} installation. There is already an "
-                    f"application at {install_dir}/{app_name}.app.")
+            print(
+                f"Skipping {app_name} installation. There is already an "
+                f"application at {install_dir}/{app_name}.app."
+            )
         else:
             print(f"Adopt/install failed for {app_name}: {e}")
         return False
+
 
 def is_managed_by_brew(app_name):
     """
@@ -96,9 +104,10 @@ def is_managed_by_brew(app_name):
         ["brew", "list", "--cask", "--versions", app_name],
         capture_output=True,
         text=True,
-        check=False
+        check=False,
     )
     return app_name in result.stdout.split()
+
 
 def is_default_apple_app(app_name):
     """
@@ -110,9 +119,16 @@ def is_default_apple_app(app_name):
     Returns:
         bool: True if the application is a default Apple app, False otherwise.
     """
-    default_apps = ["garageband", "keynote",
-                    "safari", "numbers", "imovie", "pages"]  # Add more apps as needed
+    default_apps = [
+        "garageband",
+        "keynote",
+        "safari",
+        "numbers",
+        "imovie",
+        "pages",
+    ]  # Add more apps as needed
     return app_name in default_apps
+
 
 def normalize_app_name(app_name):
     """
@@ -125,16 +141,17 @@ def normalize_app_name(app_name):
         str or None: Normalized application name if available as a Homebrew Cask, None otherwise.
     """
     # Attempt with dashes between words
-    dashed_name = app_name.replace(' ', '-')
+    dashed_name = app_name.replace(" ", "-")
     if check_cask_available(dashed_name):
         return dashed_name
 
     # Attempt with no spaces
-    no_space_name = app_name.replace(' ', '')
+    no_space_name = app_name.replace(" ", "")
     if check_cask_available(no_space_name):
         return no_space_name
 
     return None
+
 
 def main(install_dir):
     """
@@ -148,7 +165,7 @@ def main(install_dir):
     not_found_apps = []
 
     for app in apps:
-        app_name = app.replace('.app', '').lower()
+        app_name = app.replace(".app", "").lower()
 
         if is_default_apple_app(app_name):
             print(f"Skipping default Apple app: {app_name}")
@@ -158,7 +175,9 @@ def main(install_dir):
         print(f"Checking for {app_name}...")
 
         # Check if managed by Homebrew (exact name and variations)
-        if is_managed_by_brew(app_name) or is_managed_by_brew(app_name.replace(' ', '-')):
+        if is_managed_by_brew(app_name) or is_managed_by_brew(
+            app_name.replace(" ", "-")
+        ):
             print(f"{app_name} is already installed and managed via Homebrew.")
             print()
             continue
@@ -166,7 +185,9 @@ def main(install_dir):
         # Normalize app name for Homebrew
         normalized_name = normalize_app_name(app_name)
         if normalized_name:
-            print(f"{colors.GREEN}Installing {normalized_name} with Homebrew...{colors.ENDC}")
+            print(
+                f"{colors.GREEN}Installing {normalized_name} with Homebrew...{colors.ENDC}"
+            )
             install_or_adopt_app(normalized_name, install_dir)
         else:
             print(f"{app_name} is not available as a cask.")
@@ -178,7 +199,10 @@ def main(install_dir):
         print(f"\n{colors.RED}Applications not found as Homebrew casks:{colors.ENDC}\n")
         for app in not_found_apps:
             print(app)
-        print("\nFor more available Homebrew Casks, visit https://formulae.brew.sh/cask/")
+        print(
+            "\nFor more available Homebrew Casks, visit https://formulae.brew.sh/cask/"
+        )
+
 
 if __name__ == "__main__":
     INSTALL_DIR = "/Applications"

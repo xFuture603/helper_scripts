@@ -9,6 +9,7 @@ import sys
 from importlib.metadata import distributions
 from packaging.requirements import Requirement
 
+
 def read_requirements(file_path):
     """
     Reads the requirements file and returns a list of Requirement objects.
@@ -19,9 +20,10 @@ def read_requirements(file_path):
     Returns:
         list: A list of Requirement objects.
     """
-    with open(file_path, 'r', encoding='utf-8') as file:
+    with open(file_path, "r", encoding="utf-8") as file:
         requirements = file.read().splitlines()
     return [Requirement(req) for req in requirements]
+
 
 def get_installed_packages():
     """
@@ -30,7 +32,8 @@ def get_installed_packages():
     Returns:
         dict: A dictionary where keys are package names and values are versions.
     """
-    return {dist.metadata['Name'].lower(): dist.version for dist in distributions()}
+    return {dist.metadata["Name"].lower(): dist.version for dist in distributions()}
+
 
 def main(req_file):
     """
@@ -50,10 +53,13 @@ def main(req_file):
             if req.specifier.contains(installed_version):
                 print(f"{package_name}=={installed_version}")
             else:
-                print(f"{package_name} is installed but version {installed_version} "
-                      f"does not satisfy requirement {req}")
+                print(
+                    f"{package_name} is installed but version {installed_version} "
+                    f"does not satisfy requirement {req}"
+                )
         else:
             print(f"{package_name} is not installed")
+
 
 if __name__ == "__main__":
     if len(sys.argv) != 2:
