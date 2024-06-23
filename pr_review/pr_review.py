@@ -104,19 +104,25 @@ def main(username, token, owners, output_file=None):
 
     # Print repositories based on the sorted order
     for repo_name, info in sorted_repos:
-        if info['has_needing_review']:  # Check if review is needed
-            print(f'Repository: {repo_name}')
+        if info["has_needing_review"]:  # Check if review is needed
+            print(f"Repository: {repo_name}")
             pull_requests = get_open_pull_requests(repo_name, headers)
-            repos_with_needed_review_list.append(f'Repository: {repo_name}')
+            repos_with_needed_review_list.append(f"Repository: {repo_name}")
             for pr in pull_requests:
                 if needs_review(pr):
                     print(f'  PR #{pr["number"]} needs review: {pr["html_url"]}')
-                    repos_with_needed_review_list.append(f'  PR #{pr["number"]} needs review: {pr["html_url"]}')
+                    repos_with_needed_review_list.append(
+                        f'  PR #{pr["number"]} needs review: {pr["html_url"]}'
+                    )
 
     # Save the formatted output to a file if output_file is provided
     if output_file:
         with open(output_file, "w", encoding="utf-8") as f:
-            json.dump({"repos_with_needed_review_list": repos_with_needed_review_list}, f, indent=4)
+            json.dump(
+                {"repos_with_needed_review_list": repos_with_needed_review_list},
+                f,
+                indent=4,
+            )
         print(f"\nFormatted output has been saved to {output_file}")
 
 
@@ -124,24 +130,15 @@ if __name__ == "__main__":
     parser = argparse.ArgumentParser(
         description="Fetch open pull requests that need review."
     )
-    parser.add_argument("--username",
-                        required=True,
-                        help="GitHub username"
-    )
-    parser.add_argument("--token",
-                        required=True,
-                        help="GitHub personal access token"
-    )
+    parser.add_argument("--username", required=True, help="GitHub username")
+    parser.add_argument("--token", required=True, help="GitHub personal access token")
     parser.add_argument(
         "--owners",
         nargs="+",
         required=True,
         help="List of user accounts and organization accounts to scan",
     )
-    parser.add_argument(
-        "--output-file",
-        help="File to save formatted output"
-    )
+    parser.add_argument("--output-file", help="File to save formatted output")
 
     args = parser.parse_args()
 
