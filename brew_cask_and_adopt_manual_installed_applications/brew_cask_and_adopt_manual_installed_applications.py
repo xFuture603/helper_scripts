@@ -35,6 +35,46 @@ def list_installed_apps(applications_path):
     return [f for f in os.listdir(applications_path) if f.endswith(".app")]
 
 
+def brew_search(app_name):
+    result = subprocess.run(
+        ["brew", "search", "--cask", app_name], capture_output=True, text=True
+    )
+
+    if "Error: No formulae or casks found for" in result.stdout:
+        return False
+
+    return result.stdout.splitlines()
+
+
+def choose_alternative_cask(cask_names, original_name):
+    """
+    Prompt the user to choose an alternative cask from a list of cask names.
+
+    Args:
+        cask_names (list): The list of cask names from the brew search command.
+        original_name (str): The original app name to search for.
+
+    Returns:
+        str or None: The chosen cask name, or None if no valid choice is made.
+    """
+    if cask_names:
+        print(
+            f"{colors.RED}Cask '{original_name}' not found. Here are some alternatives:{colors.ENDC}"
+        )
+        for i, alt in enumerate(cask_names, 1):
+            print(f"{i}. {alt}")
+        choice = input(
+            f"Choose a cask by number (1-{len(cask_names)}), or press Enter to skip: "
+        ).strip()
+        if choice.isdigit() and 1 <= int(choice) <= len(cask_names):
+            selected_cask = cask_names[int(choice) - 1]
+            print(f"You selected: {selected_cask}")
+            return selected_cask
+        else:
+            print(f"{colors.RED}Invalid choice. Skipping...{colors.ENDC}")
+            return None
+
+
 def check_cask_available(app_name):
     """
     Check if a Homebrew Cask is available for the given application name.
@@ -45,10 +85,28 @@ def check_cask_available(app_name):
     Returns:
         bool: True if a Cask is available, False otherwise.
     """
-    result = subprocess.run(
-        ["brew", "search", app_name], capture_output=True, text=True, check=False
-    )
-    return app_name in result.stdout.split()
+    cask_findings = set()
+    if " " in app_name:
+        app_name_variations = [app_name.replace(" ", "-"), app_name.replace(" ", "")]
+        for variation in app_name_variations:
+            search_result = brew_search(variation)
+            if search_result:
+                cask_findings.update(search_result)
+    else:
+        search_result = brew_search(app_name)
+        if search_result:
+            cask_findings.update(search_result)
+
+    cask_findings = sorted(list(cask_findings))
+
+    print(cask_findings)
+
+    if app_name in cask_findings:
+        return app_name
+    elif cask_findings:
+        return choose_alternative_cask(cask_findings, app_name)
+    else:
+        return False
 
 
 def install_adopt_app(app_name, install_dir):
@@ -183,32 +241,32 @@ def main(install_dir, manually):
 
         print(f"Checking for {app_name}...")
 
-        # Normalize app name for Homebrew
-        normalized_name = normalize_app_name(app_name)
+        brew_cask_app_name = check_cask_available(app_name)
 
-        # Check if managed by Homebrew (exact name and variations)
-        if is_managed_by_brew(app_name) or (
-            normalized_name is not None and is_managed_by_brew(normalized_name)
-        ):
-            print(f"{app_name} is already installed and managed via Homebrew.")
+        # No valid alternative choosen or skipped
+        if brew_cask_app_name is None:
             continue
 
-        if manually and not prompt(f"Do you want to adopt {app_name}?"):
-            continue
+        if brew_cask_app_name:
+            if is_managed_by_brew(brew_cask_app_name):
+                print(f"{app_name} is already installed and managed via Homebrew.")
+                continue
 
-        if normalized_name:
-            print(f"Try to installing {normalized_name} with Homebrew...")
-            if install_adopt_app(normalized_name, install_dir):
+            if manually and not prompt_yes_no(f"Do you want to adopt {app_name}?"):
+                continue
+
+            print(f"Trying to install {brew_cask_app_name} with Homebrew...")
+            if install_adopt_app(brew_cask_app_name, install_dir):
                 print(
                     f"{colors.GREEN}Installation of {app_name} succeeded!{colors.ENDC}"
                 )
         else:
             print(f"{colors.RED}{app_name} is not available as a cask.{colors.ENDC}")
-            not_found_apps.append(app_name)
+            non_brew_managed_apps.append(app_name)
 
-    if not_found_apps:
-        print(f"{colors.RED}Applications not found as Homebrew casks:{colors.ENDC}")
-        for app in not_found_apps:
+    if non_brew_managed_apps:
+        print(f"\n{colors.RED}Applications not found as Homebrew casks:{colors.ENDC}")
+        for app in non_brew_managed_apps:
             print(app)
         print("For more available Homebrew Casks, visit https://formulae.brew.sh/cask/")
 
