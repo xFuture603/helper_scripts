@@ -36,14 +36,32 @@ def list_installed_apps(applications_path):
 
 
 def brew_search(app_name):
-    result = subprocess.run(
-        ["brew", "search", "--cask", app_name], capture_output=True, text=True
-    )
+    """
+    Search for an application available as a Homebrew cask.
 
-    if "Error: No formulae or casks found for" in result.stdout:
-        return False
+    Args:
+        app_name (str): Name of the application to check.
 
-    return result.stdout.splitlines()
+    Returns:
+        list: List of available cask applicaions found for given application name.
+    """
+    applications = []
+
+    try:
+        result = subprocess.run(
+            ["brew", "search", "--cask", "dsgosgodsg"],
+            capture_output=True,
+            text=True,
+            check=True,
+        )
+
+        if "Error: No formulae or casks found for" not in result.stdout:
+            applications.extend(result.stdout.splitlines())
+    except subprocess.CalledProcessError as e:
+        print(f"Brew search failed for {app_name}:")
+        print(f"{colors.RED}{e.stderr.strip()}{colors.ENDC}")
+
+    return applications
 
 
 def choose_alternative_cask(cask_names, original_name):
