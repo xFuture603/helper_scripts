@@ -179,12 +179,15 @@ def main(install_dir, manually):
     apps = list_installed_apps(install_dir)
     not_found_apps = []
 
+    terminal_width = os.get_terminal_size()
+    delimiter = "\n" + ("=" * terminal_width.columns) + "\n"
+
     for app in apps:
         app_name = app.replace(".app", "").lower()
+        print(delimiter)
 
         if is_default_apple_app(app_name):
             print(f"Skipping default Apple app: {app_name}")
-            print()
             continue
 
         print(f"Checking for {app_name}...")
@@ -194,7 +197,6 @@ def main(install_dir, manually):
             app_name.replace(" ", "-")
         ):
             print(f"{app_name} is already installed and managed via Homebrew.")
-            print()
             continue
 
         if manually and not prompt(f"Do you want to adopt {app_name}?"):
