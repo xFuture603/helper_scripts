@@ -128,6 +128,8 @@ def check_cask_available(app_name):
         return app_name
     elif cask_findings:
         return choose_alternative_cask(cask_findings, app_name)
+    else:
+        return None
 
 
 def install_adopt_app(app_name, install_dir):
