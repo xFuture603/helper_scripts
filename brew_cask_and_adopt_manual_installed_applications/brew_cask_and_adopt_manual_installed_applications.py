@@ -32,8 +32,7 @@ def list_installed_apps(applications_path):
     Returns:
         list: List of installed application filenames ending with '.app'.
     """
-    apps = [f for f in os.listdir(applications_path) if f.endswith(".app")]
-    return apps
+    return [f for f in os.listdir(applications_path) if f.endswith(".app")]
 
 
 def check_cask_available(app_name):
