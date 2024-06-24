@@ -1,7 +1,7 @@
 #!/usr/bin/env python3
 
 """
-A script to collect all manual installed applications on your Mac
+A script to collect all manually installed applications on your Mac
 and try to adopt them to a brew cask:
 https://docs.brew.sh/Tips-N'-Tricks#appoint-homebrew-cask-to-manage-a-manually-installed-app
 """
@@ -14,7 +14,7 @@ import argparse
 # ANSI color codes for terminal output
 class colors:
     """
-    Declare color variables
+    Declare color variables for terminal output.
     """
 
     RED = "\033[91m"
@@ -83,7 +83,7 @@ def check_cask_available(app_name):
         app_name (str): Name of the application to check.
 
     Returns:
-        bool: True if a Cask is available, False otherwise.
+        str: The valid Homebrew Cask application name.
     """
     cask_findings = set()
     if " " in app_name:
@@ -99,14 +99,10 @@ def check_cask_available(app_name):
 
     cask_findings = sorted(list(cask_findings))
 
-    print(cask_findings)
-
     if app_name in cask_findings:
         return app_name
     elif cask_findings:
         return choose_alternative_cask(cask_findings, app_name)
-    else:
-        return False
 
 
 def install_adopt_app(app_name, install_dir):
@@ -142,7 +138,7 @@ def is_managed_by_brew(app_name):
         app_name (str): Name of the application to check.
 
     Returns:
-        bool: True if the application is managed by Homebrew, False otherwise.
+        bool: True if the application is managed by Homebrew.
     """
     result = subprocess.run(
         ["brew", "list", "--cask", "--versions", app_name],
@@ -160,7 +156,7 @@ def is_default_apple_app(app_name):
         app_name (str): Name of the application to check.
 
     Returns:
-        bool: True if the application is a default Apple app, False otherwise.
+        bool: True if the application is a default Apple app.
     """
     default_apps = [
         "garageband",
@@ -175,7 +171,7 @@ def is_default_apple_app(app_name):
 
 def prompt_yes_no(question):
     """
-    Asks the user a yes/no question and returns the response as a boolean value.
+    Ask the user a yes/no question and return the response as a boolean value.
 
     Args:
         question (str): The question to ask the user.
