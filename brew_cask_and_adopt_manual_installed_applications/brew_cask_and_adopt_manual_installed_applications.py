@@ -187,7 +187,7 @@ def prompt_yes_no(question):
         response = input(f"{question} (y/N): ").strip().lower()
         if response in ["yes", "y"]:
             return True
-        elif response in ["no", "n"] or not response:
+        elif response in ["no", "n", ""]:
             return False
         else:
             print("Invalid response. Please answer 'yes' or 'no'.")
