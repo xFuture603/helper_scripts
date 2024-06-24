@@ -69,28 +69,26 @@ def choose_alternative_cask(cask_names, original_name):
     Prompt the user to choose an alternative cask from a list of cask names.
 
     Args:
-        cask_names (list): The list of cask names from the brew search command.
+        cask_names (list): List of cask names from the brew search command.
         original_name (str): The original app name to search for.
 
     Returns:
         str or None: The chosen cask name, or None if no valid choice is made.
     """
-    if cask_names:
-        print(
-            f"{colors.RED}Cask '{original_name}' not found. Here are some alternatives:{colors.ENDC}"
-        )
-        for i, alt in enumerate(cask_names, 1):
-            print(f"{i}. {alt}")
-        choice = input(
-            f"Choose a cask by number (1-{len(cask_names)}), or press Enter to skip: "
-        ).strip()
-        if choice.isdigit() and 1 <= int(choice) <= len(cask_names):
-            selected_cask = cask_names[int(choice) - 1]
-            print(f"You selected: {selected_cask}")
-            return selected_cask
-        else:
-            print(f"{colors.RED}Invalid choice. Skipping...{colors.ENDC}")
-            return None
+    print(
+        f"{colors.RED}Cask '{original_name}' not found. Here are some alternatives:{colors.ENDC}"
+    )
+    for i, alt in enumerate(cask_names, 1):
+        print(f"{i}. {alt}")
+    choice = input(
+        f"Choose a cask by number (1-{len(cask_names)}), or press Enter to skip: "
+    ).strip()
+    if choice.isdigit() and 1 <= int(choice) <= len(cask_names):
+        selected_cask = cask_names[int(choice) - 1]
+        print(f"You selected: {selected_cask}")
+        return selected_cask
+    else:
+        print(f"{colors.RED}Invalid choice. Skipping...{colors.ENDC}")
 
 
 def check_cask_available(app_name):
