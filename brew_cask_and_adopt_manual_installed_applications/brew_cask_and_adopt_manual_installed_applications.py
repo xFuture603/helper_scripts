@@ -63,23 +63,16 @@ def install_adopt_app(app_name, install_dir):
         bool: True if installation or adoption was successful, False otherwise.
     """
     try:
-        result = subprocess.run(
+        subprocess.run(
             ["brew", "install", "--cask", "--adopt", app_name, "--appdir", install_dir],
             capture_output=True,
             text=True,
             check=True,
         )
-        if result.returncode != 0:
-            raise subprocess.CalledProcessError(
-                result.returncode,
-                result.args,
-                output=result.stdout,
-                stderr=result.stderr,
-            )
         return True
     except subprocess.CalledProcessError as e:
         print(f"Adopt installation failed for {app_name}:")
-        print(f"{colors.RED}{(e.stderr).rstrip()}{colors.ENDC}")
+        print(f"{colors.RED}{e.stderr.strip()}{colors.ENDC}")
         return False
 
 
