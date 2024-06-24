@@ -53,7 +53,7 @@ def check_cask_available(app_name):
     return app_name in result.stdout.split()
 
 
-def install_or_adopt_app(app_name, install_dir):
+def install_adopt_app(app_name, install_dir):
     """
     Install or adopt an application using Homebrew Cask.
 
@@ -207,10 +207,11 @@ def main(install_dir, manually):
             continue
 
         if normalized_name:
-            print(
-                f"{colors.GREEN}Installing {normalized_name} with Homebrew...{colors.ENDC}"
-            )
-            install_or_adopt_app(normalized_name, install_dir)
+            print(f"Try to installing {normalized_name} with Homebrew...")
+            if install_adopt_app(normalized_name, install_dir):
+                print(
+                    f"{colors.GREEN}Installation of {app_name} succeeded!{colors.ENDC}"
+                )
         else:
             print(f"{app_name} is not available as a cask.")
             not_found_apps.append(app_name)
