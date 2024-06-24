@@ -176,6 +176,7 @@ def main(install_dir, manually):
         install_dir (str): Directory where applications are installed.
 
     """
+    print("Checking for installed applications...")
     apps = list_installed_apps(install_dir)
     not_found_apps = []
 
@@ -209,18 +210,14 @@ def main(install_dir, manually):
                     f"{colors.GREEN}Installation of {app_name} succeeded!{colors.ENDC}"
                 )
         else:
-            print(f"{app_name} is not available as a cask.")
+            print(f"{colors.RED}{app_name} is not available as a cask.{colors.ENDC}")
             not_found_apps.append(app_name)
 
-        print()
-
     if not_found_apps:
-        print(f"\n{colors.RED}Applications not found as Homebrew casks:{colors.ENDC}\n")
+        print(f"{colors.RED}Applications not found as Homebrew casks:{colors.ENDC}")
         for app in not_found_apps:
             print(app)
-        print(
-            "\nFor more available Homebrew Casks, visit https://formulae.brew.sh/cask/"
-        )
+        print("For more available Homebrew Casks, visit https://formulae.brew.sh/cask/")
 
 
 if __name__ == "__main__":
