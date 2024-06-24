@@ -193,9 +193,12 @@ def main(install_dir, manually):
 
         print(f"Checking for {app_name}...")
 
+        # Normalize app name for Homebrew
+        normalized_name = normalize_app_name(app_name)
+
         # Check if managed by Homebrew (exact name and variations)
-        if is_managed_by_brew(app_name) or is_managed_by_brew(
-            app_name.replace(" ", "-")
+        if is_managed_by_brew(app_name) or (
+            normalized_name is not None and is_managed_by_brew(normalized_name)
         ):
             print(f"{app_name} is already installed and managed via Homebrew.")
             continue
