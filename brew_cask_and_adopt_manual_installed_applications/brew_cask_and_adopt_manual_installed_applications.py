@@ -49,7 +49,7 @@ def brew_search(app_name):
 
     try:
         result = subprocess.run(
-            ["brew", "search", "--cask", "dsgosgodsg"],
+            ["brew", "search", "--cask", app_name],
             capture_output=True,
             text=True,
             check=True,
