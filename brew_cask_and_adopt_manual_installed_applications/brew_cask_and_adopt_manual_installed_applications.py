@@ -112,7 +112,7 @@ def is_default_apple_app(app_name):
         "imovie",
         "pages",
     ]  # Add more apps as needed
-    return app_name in default_apps
+    return app_name.lower() in default_apps
 
 
 def prompt(question):
