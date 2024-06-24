@@ -115,7 +115,7 @@ def is_default_apple_app(app_name):
     return app_name.lower() in default_apps
 
 
-def prompt(question):
+def prompt_yes_no(question):
     """
     Asks the user a yes/no question and returns the response as a boolean value.
 
