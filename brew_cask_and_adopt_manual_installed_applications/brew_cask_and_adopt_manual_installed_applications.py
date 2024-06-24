@@ -78,7 +78,7 @@ def install_adopt_app(app_name, install_dir):
 
 def is_managed_by_brew(app_name):
     """
-    Check if an application is already managed by Homebrew Cask.
+    Check if an application is managed by Homebrew Cask.
 
     Args:
         app_name (str): Name of the application to check.
@@ -90,9 +90,8 @@ def is_managed_by_brew(app_name):
         ["brew", "list", "--cask", "--versions", app_name],
         capture_output=True,
         text=True,
-        check=False,
     )
-    return app_name in result.stdout.split()
+    return app_name in result.stdout
 
 
 def is_default_apple_app(app_name):
