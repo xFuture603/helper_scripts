@@ -9,6 +9,7 @@ https://docs.brew.sh/Tips-N'-Tricks#appoint-homebrew-cask-to-manage-a-manually-i
 import os
 import subprocess
 import sys
+import getopt
 
 
 # ANSI color codes for terminal output
@@ -130,6 +131,26 @@ def is_default_apple_app(app_name):
     return app_name in default_apps
 
 
+def prompt(question):
+    """
+    Asks the user a yes/no question and returns the response as a boolean value.
+
+    Args:
+        question (str): The question to ask the user.
+
+    Returns:
+        bool: True if the user answers 'yes', False if the user answers 'no'.
+    """
+    while True:
+        response = input(f"{question} (y/N): ").strip().lower()
+        if response in ["yes", "y"]:
+            return True
+        elif response in ["no", "n"] or not response:
+            return False
+        else:
+            print("Invalid response. Please answer 'yes' or 'no'.")
+
+
 def normalize_app_name(app_name):
     """
     Normalize the application name for Homebrew Cask by attempting different formats.
@@ -153,7 +174,7 @@ def normalize_app_name(app_name):
     return None
 
 
-def main(install_dir):
+def main(install_dir, manually):
     """
     Main function to manage installed applications using Homebrew Cask.
 
@@ -182,8 +203,9 @@ def main(install_dir):
             print()
             continue
 
-        # Normalize app name for Homebrew
-        normalized_name = normalize_app_name(app_name)
+        if manually and not prompt(f"Do you want to adopt {app_name}?"):
+            continue
+
         if normalized_name:
             print(
                 f"{colors.GREEN}Installing {normalized_name} with Homebrew...{colors.ENDC}"
@@ -205,7 +227,22 @@ def main(install_dir):
 
 
 if __name__ == "__main__":
-    INSTALL_DIR = "/Applications"
-    if len(sys.argv) > 1:
-        INSTALL_DIR = sys.argv[1]
-    main(INSTALL_DIR)
+    install_dir = "/Applications"
+    manually = False
+
+    try:
+        opts, args = getopt.getopt(sys.argv[1:], "hi:m", ["install-dir=", "manually"])
+    except getopt.GetoptError:
+        print(f"Usage: {sys.argv[0]} -i <install_dir> -m")
+        sys.exit(2)
+
+    for opt, arg in opts:
+        if opt == "-h":
+            print(f"Usage: {sys.argv[0]} -i <install_dir> -m")
+            sys.exit()
+        elif opt in ("-i", "--install-dir"):
+            install_dir = arg
+        elif opt in ("-m", "--manually"):
+            manually = True
+
+    main(install_dir, manually)
