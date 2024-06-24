@@ -193,29 +193,6 @@ def prompt_yes_no(question):
             print("Invalid response. Please answer 'yes' or 'no'.")
 
 
-def normalize_app_name(app_name):
-    """
-    Normalize the application name for Homebrew Cask by attempting different formats.
-
-    Args:
-        app_name (str): Name of the application to normalize.
-
-    Returns:
-        str or None: Normalized application name if available as a Homebrew Cask, None otherwise.
-    """
-    # Attempt with dashes between words
-    dashed_name = app_name.replace(" ", "-")
-    if check_cask_available(dashed_name):
-        return dashed_name
-
-    # Attempt with no spaces
-    no_space_name = app_name.replace(" ", "")
-    if check_cask_available(no_space_name):
-        return no_space_name
-
-    return None
-
-
 def main(install_dir, manually):
     """
     Main function to manage installed applications using Homebrew Cask.
