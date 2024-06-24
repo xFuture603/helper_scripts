@@ -12,14 +12,21 @@ import argparse
 
 
 # ANSI color codes for terminal output
-class colors:
-    """
-    Declare color variables for terminal output.
-    """
-
+class Colors:
     RED = "\033[91m"
     GREEN = "\033[92m"
     ENDC = "\033[0m"
+
+
+def print_colored(message, color):
+    """
+    Print a message with the specified ANSI color.
+
+    Args:
+        message (str): The message to print.
+        color (str): The ANSI color code.
+    """
+    print(f"{color}{message}{Colors.ENDC}")
 
 
 def list_installed_apps(applications_path):
@@ -58,8 +65,9 @@ def brew_search(app_name):
         if "Error: No formulae or casks found for" not in result.stdout:
             applications.extend(result.stdout.splitlines())
     except subprocess.CalledProcessError as e:
-        print(f"Brew search failed for {app_name}:")
-        print(f"{colors.RED}{e.stderr.strip()}{colors.ENDC}")
+        print_colored(
+            f"Brew search failed for {app_name}:\n{e.stderr.strip()}", Colors.RED
+        )
 
     return applications
 
@@ -75,8 +83,8 @@ def choose_alternative_cask(cask_names, original_name):
     Returns:
         str or None: The chosen cask name, or None if no valid choice is made.
     """
-    print(
-        f"{colors.RED}Cask '{original_name}' not found. Here are some alternatives:{colors.ENDC}"
+    print_colored(
+        f"Cask '{original_name}' not found. Here are some alternatives:", Colors.RED
     )
     for i, alt in enumerate(cask_names, 1):
         print(f"{i}. {alt}")
@@ -88,7 +96,8 @@ def choose_alternative_cask(cask_names, original_name):
         print(f"You selected: {selected_cask}")
         return selected_cask
     else:
-        print(f"{colors.RED}Invalid choice. Skipping...{colors.ENDC}")
+        print_colored("Invalid choice. Skipping...", Colors.RED)
+        return None
 
 
 def check_cask_available(app_name):
@@ -141,8 +150,9 @@ def install_adopt_app(app_name, install_dir):
         )
         return True
     except subprocess.CalledProcessError as e:
-        print(f"Adopt installation failed for {app_name}:")
-        print(f"{colors.RED}{e.stderr.strip()}{colors.ENDC}")
+        print_colored(
+            f"Adopt installation failed for {app_name}:\n{e.stderr.strip()}", Colors.RED
+        )
         return False
 
 
@@ -235,7 +245,7 @@ def main(install_dir, manually):
 
         # No valid alternative chosen or skipped
         if brew_cask_app_name is None:
-            print(f"{colors.RED}{app_name} is not available as a cask.{colors.ENDC}")
+            print_colored(f"{app_name} is not available as a cask.", Colors.RED)
             non_brew_managed_apps.append(app_name)
             continue
 
@@ -251,10 +261,10 @@ def main(install_dir, manually):
         # Try to install application with Homebrew
         print(f"Trying to install {brew_cask_app_name} with Homebrew...")
         if install_adopt_app(brew_cask_app_name, install_dir):
-            print(f"{colors.GREEN}Installation of {app_name} succeeded!{colors.ENDC}")
+            print_colored(f"Installation of {app_name} succeeded!", Colors.GREEN)
 
     if non_brew_managed_apps:
-        print(f"\n{colors.RED}Applications not found as Homebrew casks:{colors.ENDC}")
+        print_colored("\nApplications not found as Homebrew casks:", Colors.RED)
         for app in non_brew_managed_apps:
             print(app)
         print("For more available Homebrew Casks, visit https://formulae.brew.sh/cask/")
