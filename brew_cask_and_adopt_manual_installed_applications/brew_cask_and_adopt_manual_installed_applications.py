@@ -218,38 +218,40 @@ def main(install_dir, manually):
     non_brew_managed_apps = []
 
     for app in installed_apps:
+        # Split path and extract app name only
         app_name = os.path.splitext(app)[0].lower()
 
         print("")
 
+        # Skip if application is an Apple app
         if is_default_apple_app(app_name):
             print(f"Skipping default Apple app: {app_name}")
             continue
 
         print(f"Checking for {app_name}...")
 
+        # Check for valid cask name or suggest alternative name
         brew_cask_app_name = check_cask_available(app_name)
 
-        # No valid alternative choosen or skipped
+        # No valid alternative chosen or skipped
         if brew_cask_app_name is None:
-            continue
-
-        if brew_cask_app_name:
-            if is_managed_by_brew(brew_cask_app_name):
-                print(f"{app_name} is already installed and managed via Homebrew.")
-                continue
-
-            if manually and not prompt_yes_no(f"Do you want to adopt {app_name}?"):
-                continue
-
-            print(f"Trying to install {brew_cask_app_name} with Homebrew...")
-            if install_adopt_app(brew_cask_app_name, install_dir):
-                print(
-                    f"{colors.GREEN}Installation of {app_name} succeeded!{colors.ENDC}"
-                )
-        else:
             print(f"{colors.RED}{app_name} is not available as a cask.{colors.ENDC}")
             non_brew_managed_apps.append(app_name)
+            continue
+
+        # Application already managed by Homebrew
+        if is_managed_by_brew(brew_cask_app_name):
+            print(f"{app_name} is already installed and managed via Homebrew.")
+            continue
+
+        # For manually mode prompt to ask for adoption
+        if manually and not prompt_yes_no(f"Do you want to adopt {app_name}?"):
+            continue
+
+        # Try to install application with Homebrew
+        print(f"Trying to install {brew_cask_app_name} with Homebrew...")
+        if install_adopt_app(brew_cask_app_name, install_dir):
+            print(f"{colors.GREEN}Installation of {app_name} succeeded!{colors.ENDC}")
 
     if non_brew_managed_apps:
         print(f"\n{colors.RED}Applications not found as Homebrew casks:{colors.ENDC}")
