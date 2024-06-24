@@ -199,7 +199,7 @@ def main(install_dir, manually):
 
     Args:
         install_dir (str): Directory where applications are installed.
-
+        manually (bool): Whether to prompt for adoption confirmation.
     """
     print("Checking for installed applications...")
     apps = list_installed_apps(install_dir)
