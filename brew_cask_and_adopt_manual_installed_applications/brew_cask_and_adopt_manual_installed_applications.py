@@ -202,15 +202,13 @@ def main(install_dir, manually):
         manually (bool): Whether to prompt for adoption confirmation.
     """
     print("Checking for installed applications...")
-    apps = list_installed_apps(install_dir)
-    not_found_apps = []
+    installed_apps = list_installed_apps(install_dir)
+    non_brew_managed_apps = []
 
-    terminal_width = os.get_terminal_size()
-    delimiter = "\n" + ("=" * terminal_width.columns) + "\n"
+    for app in installed_apps:
+        app_name = os.path.splitext(app)[0].lower()
 
-    for app in apps:
-        app_name = app.replace(".app", "").lower()
-        print(delimiter)
+        print("")
 
         if is_default_apple_app(app_name):
             print(f"Skipping default Apple app: {app_name}")
