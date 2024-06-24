@@ -80,14 +80,8 @@ def install_adopt_app(app_name, install_dir):
             )
         return True
     except subprocess.CalledProcessError as e:
-        # Check if the error is due to existing app conflict
-        if "Error: It seems there is already an App at" in e.stderr:
-            print(
-                f"Skipping {app_name} installation. There is already an "
-                f"application at {install_dir}/{app_name}.app."
-            )
-        else:
-            print(f"Adopt/install failed for {app_name}: {e}")
+        print(f"Adopt installation failed for {app_name}:")
+        print(f"{colors.RED}{(e.stderr).rstrip()}{colors.ENDC}")
         return False
 
 
