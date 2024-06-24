@@ -50,7 +50,7 @@ def brew_search(app_name):
         app_name (str): Name of the application to check.
 
     Returns:
-        list: List of available cask applicaions found for given application name.
+        list: List of available cask applications found for the given application name.
     """
     applications = []
 
