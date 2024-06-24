@@ -8,8 +8,7 @@ https://docs.brew.sh/Tips-N'-Tricks#appoint-homebrew-cask-to-manage-a-manually-i
 
 import os
 import subprocess
-import sys
-import getopt
+import argparse
 
 
 # ANSI color codes for terminal output
@@ -224,22 +223,22 @@ def main(install_dir, manually):
 
 
 if __name__ == "__main__":
-    install_dir = "/Applications"
-    manually = False
+    parser = argparse.ArgumentParser(
+        description="Adopt manually installed applications to Homebrew Cask."
+    )
+    parser.add_argument(
+        "-i",
+        "--install-dir",
+        type=str,
+        default="/Applications",
+        help="Directory where applications are installed (default: /Applications)",
+    )
+    parser.add_argument(
+        "-m",
+        "--manually",
+        action="store_true",
+        help="Prompt for adoption confirmation (default: False)",
+    )
+    args = parser.parse_args()
 
-    try:
-        opts, args = getopt.getopt(sys.argv[1:], "hi:m", ["install-dir=", "manually"])
-    except getopt.GetoptError:
-        print(f"Usage: {sys.argv[0]} -i <install_dir> -m")
-        sys.exit(2)
-
-    for opt, arg in opts:
-        if opt == "-h":
-            print(f"Usage: {sys.argv[0]} -i <install_dir> -m")
-            sys.exit()
-        elif opt in ("-i", "--install-dir"):
-            install_dir = arg
-        elif opt in ("-m", "--manually"):
-            manually = True
-
-    main(install_dir, manually)
+    main(args.install_dir, args.manually)
