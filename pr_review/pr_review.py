@@ -1,4 +1,4 @@
-#!/usr/bin/python3
+#!/usr/bin/env python3
 
 """
 A script to gather open pull requests from github.com that are in need of a review.
