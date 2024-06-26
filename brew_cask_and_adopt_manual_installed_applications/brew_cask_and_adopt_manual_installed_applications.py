@@ -273,10 +273,12 @@ def main(install_dir, manually):
             )
 
     if non_brew_managed_apps:
-        print_colored("\nApplications not found as Homebrew casks:", Colors.RED)
+        print_colored("\nApplications not found as Homebrew casks:\n", Colors.RED)
         for app in non_brew_managed_apps:
             print(app)
-        print("For more available Homebrew Casks, visit https://formulae.brew.sh/cask/")
+        print(
+            "\nFor more available Homebrew Casks, visit https://formulae.brew.sh/cask/"
+        )
 
 
 if __name__ == "__main__":
