@@ -19,14 +19,22 @@ The script scans the `/Applications` directory (or a specified directory) for in
 ## Requirements
 
 - Python 3
-- Homebrew (for managing applications with Homebrew Cask)
+- [Homebrew](https://docs.brew.sh/) (for managing applications with Homebrew Cask)
 
 ## Usage
 
-The script can be run from the command line. By default, it checks applications in `/Applications`. Optionally, you can specify a different directory.
+The script can be run from the command line. By default, it checks applications in `/Applications`. Optionally, you can specify a different directory and request confirmation before the adoption for each application.
 
 ```sh
-python3 brew_cask_and_adopt_manual_installed_applications.py <install_directory>
+usage: brew_cask_and_adopt_manual_installed_applications.py [-h] [-i INSTALL_DIR] [-m]
+
+Adopt manually installed applications to Homebrew Cask.
+
+options:
+  -h, --help            show this help message and exit
+  -i INSTALL_DIR, --install-dir INSTALL_DIR
+                        Directory where applications are installed (default: /Applications)
+  -m, --manually        Prompt for adoption confirmation (default: False)
 ```
 
 ## Example Output
