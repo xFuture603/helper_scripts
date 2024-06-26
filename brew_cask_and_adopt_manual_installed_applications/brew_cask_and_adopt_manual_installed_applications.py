@@ -13,6 +13,10 @@ import argparse
 
 # ANSI color codes for terminal output
 class Colors:
+    """
+    Declare color variables
+    """
+
     RED = "\033[91m"
     GREEN = "\033[92m"
     ENDC = "\033[0m"
