@@ -136,7 +136,7 @@ def check_cask_available(app_name):
         return None
 
 
-def brew_install(app_name, install_dir, mode="adopt"):
+def brew_install(app_name, install_dir, mode="adopt", retry_count=0):
     """
     Install or adopt an application using Homebrew Cask.
 
@@ -152,7 +152,7 @@ def brew_install(app_name, install_dir, mode="adopt"):
         "install",
         "--cask",
         app_name,
-        "--" + mode,
+        f"--{mode}",
         "--appdir",
         install_dir,
     ]
@@ -164,15 +164,15 @@ def brew_install(app_name, install_dir, mode="adopt"):
             text=True,
             check=True,
         )
-
         return True
     except subprocess.CalledProcessError as e:
-        if "It seems the existing App is different" in e.stderr:
-            force = prompt_yes_no(
+        if "It seems the existing App is different" in e.stderr and retry_count < 1:
+            if prompt_yes_no(
                 "It seems the existing App is different from the one being installed.\nDo you want to force install?"
-            )
-            if force:
-                return brew_install(app_name, install_dir, mode="force")
+            ):
+                return brew_install(
+                    app_name, install_dir, mode="force", retry_count=retry_count + 1
+                )
 
         print_colored(
             f'Installation failed for "{app_name}":\n{e.stderr.strip()}',
