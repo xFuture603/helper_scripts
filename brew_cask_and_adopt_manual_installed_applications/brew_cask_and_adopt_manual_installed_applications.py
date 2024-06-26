@@ -143,6 +143,8 @@ def brew_install(app_name, install_dir, mode="adopt", retry_count=0):
     Args:
         app_name (str): Name of the application to install or adopt.
         install_dir (str): Directory where the application should be installed.
+        mode (str): Installation mode, either "adopt" or "force".
+        retry_count (int): Current retry attempt count to avoid infinity loop.
 
     Returns:
         bool: True if installation or adoption was successful, False otherwise.
