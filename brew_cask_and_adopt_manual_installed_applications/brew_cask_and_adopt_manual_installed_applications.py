@@ -136,7 +136,7 @@ def check_cask_available(app_name):
         return None
 
 
-def install_adopt_app(app_name, install_dir):
+def brew_install(app_name, install_dir, mode="adopt"):
     """
     Install or adopt an application using Homebrew Cask.
 
@@ -147,17 +147,35 @@ def install_adopt_app(app_name, install_dir):
     Returns:
         bool: True if installation or adoption was successful, False otherwise.
     """
+    install_command = [
+        "brew",
+        "install",
+        "--cask",
+        app_name,
+        "--" + mode,
+        "--appdir",
+        install_dir,
+    ]
+
     try:
         subprocess.run(
-            ["brew", "install", "--cask", "--adopt", app_name, "--appdir", install_dir],
+            install_command,
             capture_output=True,
             text=True,
             check=True,
         )
+
         return True
     except subprocess.CalledProcessError as e:
+        if "It seems the existing App is different" in e.stderr:
+            force = prompt_yes_no(
+                "It seems the existing App is different from the one being installed.\nDo you want to force install?"
+            )
+            if force:
+                return brew_install(app_name, install_dir, mode="force")
+
         print_colored(
-            f'Adopt installation failed for "{app_name}":\n{e.stderr.strip()}',
+            f'Installation failed for "{app_name}":\n{e.stderr.strip()}',
             Colors.RED,
         )
         return False
@@ -271,7 +289,7 @@ def main(install_dir, manually):
 
         # Try to install application with Homebrew
         print(f'Trying to install "{brew_cask_app_name}" with Homebrew...')
-        if install_adopt_app(brew_cask_app_name, install_dir):
+        if brew_install(brew_cask_app_name, install_dir):
             print_colored(
                 f'Installation of "{brew_cask_app_name}" succeeded!', Colors.GREEN
             )
