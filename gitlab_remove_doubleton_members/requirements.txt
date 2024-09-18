@@ -1,0 +1,2 @@
+python-gitlab==4.11.1
+urllib3==2.2.3
