@@ -15,13 +15,11 @@ from colorama import Fore, Style
 
 # Suppress the InsecureRequestWarning from urllib3 because you will get
 # a error in certain infrastructures..
-warnings.simplefilter('ignore', InsecureRequestWarning)
+warnings.simplefilter("ignore", InsecureRequestWarning)
 
 # Configure logging
-logging.basicConfig(
-    level=logging.INFO,
-    format='%(message)s'
-)
+logging.basicConfig(level=logging.INFO, format="%(message)s")
+
 
 def get_paginated_data(get_function, **kwargs):
     """Helper function to handle paginated API results."""
@@ -35,15 +33,18 @@ def get_paginated_data(get_function, **kwargs):
         page += 1
     return all_data
 
+
 def get_group_members(gl, group_id):
     """Get all members of a group, including inherited members."""
     group = gl.groups.get(group_id)
     return get_paginated_data(group.members.list)
 
+
 def get_repo_members(gl, repo_id):
     """Get all direct members of a repository (project)."""
     project = gl.projects.get(repo_id)
     return get_paginated_data(project.members.list)
+
 
 def get_group_projects(gl, group_id):
     """Get all projects in a group, including those in subgroups."""
@@ -53,10 +54,13 @@ def get_group_projects(gl, group_id):
     # Recursively get projects from subgroups
     subgroups = get_paginated_data(group.subgroups.list)
     for subgroup in subgroups:
-        logging.info("Fetching projects from subgroup %s (ID: %s)", subgroup.name, subgroup.id)
+        logging.info(
+            "Fetching projects from subgroup %s (ID: %s)", subgroup.name, subgroup.id
+        )
         all_projects.extend(get_group_projects(gl, subgroup.id))
 
     return all_projects
+
 
 def remove_direct_members(gl, group_id, dry_run, repo_scope=None):
     """Remove direct members of repositories that are part of the group."""
@@ -71,10 +75,7 @@ def remove_direct_members(gl, group_id, dry_run, repo_scope=None):
 
     # Filter repositories if scope is provided
     if repo_scope:
-        projects = [
-            project for project in projects
-            if project.name in repo_scope
-        ]
+        projects = [project for project in projects if project.name in repo_scope]
 
     # Ensure that we have a valid list of projects
     if not projects:
@@ -97,21 +98,29 @@ def remove_direct_members(gl, group_id, dry_run, repo_scope=None):
                 if dry_run:
                     # Use lazy formatting, add color, and include the project URL
                     logging.info(
-                        Fore.YELLOW + "Dry-run: Would remove member %s from repository %s (%s)"
-                        + Style.RESET_ALL, member.username, project.name, project_url
+                        Fore.YELLOW
+                        + "Dry-run: Would remove member %s from repository %s (%s)"
+                        + Style.RESET_ALL,
+                        member.username,
+                        project.name,
+                        project_url,
                     )
                 else:
                     try:
                         logging.info(
                             "Removing member %s from repository %s",
-                            member.username, project.name
+                            member.username,
+                            project.name,
                         )
                         project.members.delete(member.id)
                     except gitlab.exceptions.GitlabDeleteError as e:
                         logging.error(
                             "Failed to remove %s from %s: %s",
-                            member.username, project.name, e
+                            member.username,
+                            project.name,
+                            e,
                         )
+
 
 def main():
     """Main function to parse arguments and clean up repository members in a GitLab group.
@@ -137,36 +146,32 @@ def main():
     parser = argparse.ArgumentParser(
         description="GitLab group repository member cleanup script"
     )
+    parser.add_argument("gitlab_url", help="The base URL of the GitLab instance")
+    parser.add_argument("access_token", help="GitLab personal access token")
     parser.add_argument(
-        "gitlab_url",
-        help="The base URL of the GitLab instance"
-    )
-    parser.add_argument(
-        "access_token",
-        help="GitLab personal access token"
-    )
-    parser.add_argument(
-        "group_id",
-        help="The group ID or path for which to clean up repositories"
+        "group_id", help="The group ID or path for which to clean up repositories"
     )
     parser.add_argument(
         "--dry-run",
         action="store_true",
-        help="If set, just print members that would be removed"
+        help="If set, just print members that would be removed",
     )
     parser.add_argument(
         "--repo-scope",
         nargs="*",
-        help="Optional list of repository names to limit scope"
+        help="Optional list of repository names to limit scope",
     )
 
     args = parser.parse_args()
 
     # Initialize GitLab connection
-    gl = gitlab.Gitlab(args.gitlab_url, private_token=args.access_token, ssl_verify=False)
+    gl = gitlab.Gitlab(
+        args.gitlab_url, private_token=args.access_token, ssl_verify=False
+    )
 
     # Run the member cleanup process
     remove_direct_members(gl, args.group_id, args.dry_run, args.repo_scope)
+
 
 if __name__ == "__main__":
     main()
