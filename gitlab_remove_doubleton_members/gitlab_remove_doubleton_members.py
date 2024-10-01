@@ -53,7 +53,9 @@ def get_group_members(gl, group_id):
     """Get all members of a group, including inherited members."""
     group = gl.groups.get(group_id)
     members = get_paginated_data(group.members.list)
-    logging.info(f"Fetched group members for group {group_id} (URL: {group.web_url})")
+    logging.info(
+        "Fetched group members for group %s (URL: %s)", group_id, group.web_url
+    )
     return members
 
 
@@ -80,7 +82,8 @@ def get_group_projects(gl, group_id):
 
 
 def remove_direct_members(gl, group_id, dry_run, exclude_users=None):
-    """Remove direct members of repositories that are part of the group and have inherited permissions."""
+    """Remove direct members of repositories that are part of the group
+    and have inherited permissions."""
     all_groups = get_all_groups(gl, group_id)
     all_group_member_ids = set()
 
@@ -108,7 +111,11 @@ def remove_direct_members(gl, group_id, dry_run, exclude_users=None):
 
         # Check if project has already been processed
         if project_id in processed_projects:
-            logging.info(f"Skipping already processed project {project.name} (ID: {project_id})")
+            logging.info(
+                "Skipping already processed project %s (ID: %s)",
+                project.name,
+                project_id,
+            )
             continue
 
         # Add to processed projects
@@ -117,7 +124,12 @@ def remove_direct_members(gl, group_id, dry_run, exclude_users=None):
         # Fetch project details to ensure complete data
         project = gl.projects.get(project_id)  # Ensure we have all project data
         project_url = project.web_url  # Get the project URL
-        logging.info(f"Processing repository {project.name} (ID: {project.id}, URL: {project_url})")
+        logging.info(
+            "Processing repository %s (ID: %s, URL: %s)",
+            project.name,
+            project.id,
+            project_url,
+        )
 
         # Get direct members of the project
         repo_members = get_repo_members(gl, project.id)

@@ -24,7 +24,7 @@ The script connects to a GitLab instance, retrieves all projects within a specif
 The script can be executed from the command line. You need to provide the GitLab URL, an access token with API scope, and the group ID or path. You can also specify a list of repositories to limit the scope and use a dry-run option to preview changes without making modifications.
 
 ```sh
-usage: gitlab_remove_doubleton_members.py [-h] [-u GITLAB_URL] -t ACCESS_TOKEN -g GROUP_ID [--dry-run] [--repo-scope REPO_SCOPE [REPO_SCOPE ...]]
+usage: gitlab_remove_doubleton_members.py [-h] [-u GITLAB_URL] -t ACCESS_TOKEN -g GROUP_ID [--dry-run] [--exclude-users USER1 USER2]
 
 Remove direct members from repositories that are part of a specified GitLab group.
 
@@ -37,8 +37,9 @@ options:
   -g GROUP_ID, --group-id GROUP_ID
                         The group ID or path for which to clean up repositories
   --dry-run              If set, just print members that would be removed
-  --repo-scope REPO_SCOPE [REPO_SCOPE ...]
-                        Optional list of repository names to limit scope
+  --exclude-users
+                        Optional list of usernames to exclude from removal.
+
 ```
 
 ## Example
