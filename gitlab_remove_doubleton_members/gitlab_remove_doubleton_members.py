@@ -79,7 +79,7 @@ def get_group_projects(gl, group_id):
     return all_projects
 
 
-def remove_direct_members(gl, group_id, dry_run, repo_scope=None, exclude_users=None):
+def remove_direct_members(gl, group_id, dry_run, exclude_users=None):
     """Remove direct members of repositories that are part of the group and have inherited permissions."""
     all_groups = get_all_groups(gl, group_id)
     all_group_member_ids = set()
@@ -94,10 +94,6 @@ def remove_direct_members(gl, group_id, dry_run, repo_scope=None, exclude_users=
     # Get all repositories in the group, including subgroups
     logging.info("Fetching repositories for group %s", group_id)
     projects = get_group_projects(gl, group_id)
-
-    # Filter repositories if scope is provided
-    if repo_scope:
-        projects = [project for project in projects if project.name in repo_scope]
 
     # Ensure that we have a valid list of projects
     if not projects:
@@ -186,7 +182,6 @@ def main():
         access_token (str): GitLab personal access token.
         group_id (int or str): The ID or path of the group to clean up.
         --dry-run (optional): If set, print members that would be removed without making changes.
-        --repo-scope (optional): List of repositories to limit the scope to certain repositories.
         --exclude-users (optional): List of usernames to exclude from removal.
 
     Returns:
@@ -207,11 +202,6 @@ def main():
         help="If set, just print members that would be removed",
     )
     parser.add_argument(
-        "--repo-scope",
-        nargs="*",
-        help="Optional list of repository names to limit scope",
-    )
-    parser.add_argument(
         "--exclude-users",
         nargs="*",
         help="Optional list of usernames to exclude from removal",
@@ -225,7 +215,7 @@ def main():
     )
 
     # Run the member cleanup process
-    remove_direct_members(gl, args.group_id, args.dry_run, args.repo_scope, args.exclude_users)
+    remove_direct_members(gl, args.group_id, args.dry_run, args.exclude_users)
 
 
 if __name__ == "__main__":
