@@ -21,7 +21,7 @@ jobs:
 
       - name: Black formatter
         if: ${{ steps.changed-files.outputs.all_changed_files != '' }}
-        uses: psf/black@24.10.0
+        uses: psf/black@25.1.0
         with:
           src: ${{ steps.changed-files.outputs.all_changed_files }}
 
