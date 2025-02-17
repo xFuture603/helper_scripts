@@ -1,0 +1,8 @@
+name: Enforce Commit Linting
+on:
+  pull_request:
+  workflow_call:
+
+jobs:
+  call-commit-lint:
+    uses: xfuture603/.github/.github/workflows/commit-lint.yml@main
