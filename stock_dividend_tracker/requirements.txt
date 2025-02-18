@@ -1,3 +1,3 @@
-yfinance==0.2.53
+yfinance==0.2.54
 pyyaml==6.0.2
 pytz==2025.1
