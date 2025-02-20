@@ -10,6 +10,7 @@ A collection of various helper scripts that I use.
 * [Receive Ex-Dividend Dates for stocks](stock_dividend_tracker/README.md)
 * [List GitLab Pipeline schedules for a specific user](gitlab_pipeline_schedules/README.md)
 * [Remove directly added members which are also group members in GitLab](gitlab_remove_doubleton_members/README.md)
+* [Check multiple yaml files for duplicates and outsource them](yaml_deduplicate/README.md)
 
 Note: Have a look at the README files in the specific subdirectories for documentation.
 
