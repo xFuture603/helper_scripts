@@ -97,8 +97,11 @@ def repository_last_commit_date(project):
         if commits:
             return parse_date(commits[0].committed_date)
     except GitlabError as e:
-        logging.error("Error retrieving commits for project %s: %s",
-                      project.path_with_namespace, e)
+        logging.error(
+            "Error retrieving commits for project %s: %s",
+            project.path_with_namespace,
+            e,
+        )
     return None
 
 
@@ -110,20 +113,30 @@ def main():
     commits.
     """
     parser = argparse.ArgumentParser(
-        description=("List GitLab repositories with latest commit older than a given "
-                     "timestamp or no commit at all.")
+        description=(
+            "List GitLab repositories with latest commit older than a given "
+            "timestamp or no commit at all."
+        )
     )
-    parser.add_argument("gitlab_url",
-                        help="The base URL of the GitLab instance (e.g., https://gitlab.com)")
+    parser.add_argument(
+        "gitlab_url",
+        help="The base URL of the GitLab instance (e.g., https://gitlab.com)",
+    )
     parser.add_argument("access_token", help="GitLab personal access token")
     parser.add_argument(
         "timestamp",
-        help=("Threshold timestamp (ISO8601 format, e.g., 2021-01-01T00:00:00Z). "
-              "Repositories with the latest commit before this time will be listed.")
+        help=(
+            "Threshold timestamp (ISO8601 format, e.g., 2021-01-01T00:00:00Z). "
+            "Repositories with the latest commit before this time will be listed."
+        ),
     )
-    parser.add_argument("--group",
-                        help=("Optional: Group ID or path to list repositories from a "
-                              "specific group only"))
+    parser.add_argument(
+        "--group",
+        help=(
+            "Optional: Group ID or path to list repositories from a "
+            "specific group only"
+        ),
+    )
 
     args = parser.parse_args()
 
@@ -134,8 +147,9 @@ def main():
         return
 
     # Connect to the GitLab instance.
-    gl = gitlab.Gitlab(args.gitlab_url, private_token=args.access_token,
-                       ssl_verify=False)
+    gl = gitlab.Gitlab(
+        args.gitlab_url, private_token=args.access_token, ssl_verify=False
+    )
 
     if args.group:
         logging.info("Fetching projects for group %s", args.group)
@@ -157,12 +171,18 @@ def main():
         if last_commit_date:
             if last_commit_date < threshold_date:
                 old_projects.append(project)
-                logging.info("Project %s (ID: %s) last commit: %s",
-                             project.path_with_namespace, project.id,
-                             last_commit_date)
+                logging.info(
+                    "Project %s (ID: %s) last commit: %s",
+                    project.path_with_namespace,
+                    project.id,
+                    last_commit_date,
+                )
         else:
-            logging.info("No commits found for project %s (ID: %s)",
-                         project.path_with_namespace, project.id)
+            logging.info(
+                "No commits found for project %s (ID: %s)",
+                project.path_with_namespace,
+                project.id,
+            )
             no_commit_projects.append(project)
 
     print(f"\nRepositories with latest commit older than {threshold_date}:")
