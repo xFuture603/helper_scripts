@@ -24,21 +24,21 @@ The script connects to a GitLab instance, retrieves all projects within a specif
 The script can be executed from the command line. You need to provide the GitLab URL, an access token with API scope, and the group ID or path. You can also specify a list of repositories to limit the scope and use a dry-run option to preview changes without making modifications.
 
 ```sh
-usage: gitlab_remove_doubleton_members.py [-h] [-u GITLAB_URL] -t ACCESS_TOKEN -g GROUP_ID [--dry-run] [--exclude-users USER1 USER2]
+usage: gitlab_remove_doubleton_members.py [-h] -u GITLAB_URL -t TOKEN -g GROUP [--dry-run] [--exclude-users [USER1 USER2 ...]]
 
 Remove direct members from repositories that are part of a specified GitLab group.
 
 options:
   -h, --help            show this help message and exit
   -u GITLAB_URL, --gitlab-url GITLAB_URL
-                        GitLab base URL (default: https://gitlab.com)
-  -t ACCESS_TOKEN, --access-token ACCESS_TOKEN
-                        GitLab access token (API scope)
-  -g GROUP_ID, --group-id GROUP_ID
+                        The base URL of the GitLab instance
+  -t TOKEN, --token TOKEN
+                        GitLab personal access token
+  -g GROUP, --group GROUP
                         The group ID or path for which to clean up repositories
-  --dry-run              If set, just print members that would be removed
-  --exclude-users
-                        Optional list of usernames to exclude from removal.
+  --dry-run             If set, just print members that would be removed
+  --exclude-users [USER1 USER2 ...]
+                        Optional list of usernames to exclude from removal
 
 ```
 
@@ -49,6 +49,19 @@ To run the script and remove direct members from repositories within a group, us
 ```sh
 python gitlab_remove_doubleton_members.py -u https://gitlab.example.com -t your_access_token -g your_group
 ```
+
+For a dry run that shows what would be removed without making changes:
+
+```sh
+python gitlab_remove_doubleton_members.py -u https://gitlab.example.com -t your_access_token -g your_group --dry-run
+```
+
+To exclude specific users from removal:
+
+```sh
+python gitlab_remove_doubleton_members.py -u https://gitlab.example.com -t your_access_token -g your_group --exclude-users admin user1 user2
+```
+
 ## Example Output
 
 ```sh

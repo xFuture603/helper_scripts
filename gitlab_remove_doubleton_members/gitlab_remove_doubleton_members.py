@@ -190,9 +190,9 @@ def main():
        based on the arguments.
 
     Command-line arguments:
-        gitlab_url (str): The base URL of the GitLab instance.
-        access_token (str): GitLab personal access token.
-        group_id (int or str): The ID or path of the group to clean up.
+        -u, --gitlab-url: The base URL of the GitLab instance.
+        -t, --token: GitLab personal access token.
+        -g, --group: The ID or path of the group to clean up.
         --dry-run (optional): If set, print members that would be removed without making changes.
         --exclude-users (optional): List of usernames to exclude from removal.
 
@@ -203,10 +203,17 @@ def main():
     parser = argparse.ArgumentParser(
         description="GitLab group repository member cleanup script"
     )
-    parser.add_argument("gitlab_url", help="The base URL of the GitLab instance")
-    parser.add_argument("access_token", help="GitLab personal access token")
     parser.add_argument(
-        "group_id", help="The group ID or path for which to clean up repositories"
+        "-u", "--gitlab-url", 
+        required=True,
+        help="The base URL of the GitLab instance")
+
+    parser.add_argument("-t", "--token", required=True, help="GitLab personal access token")
+
+    parser.add_argument(
+        "-g", "--group",
+        required=True,
+        help="The group ID or path for which to clean up repositories"
     )
     parser.add_argument(
         "--dry-run",
@@ -223,11 +230,11 @@ def main():
 
     # Initialize GitLab connection
     gl = gitlab.Gitlab(
-        args.gitlab_url, private_token=args.access_token, ssl_verify=False
+        args.gitlab_url, private_token=args.token, ssl_verify=False
     )
 
     # Run the member cleanup process
-    remove_direct_members(gl, args.group_id, args.dry_run, args.exclude_users)
+    remove_direct_members(gl, args.group, args.dry_run, args.exclude_users)
 
 
 if __name__ == "__main__":
