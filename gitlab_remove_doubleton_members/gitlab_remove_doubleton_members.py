@@ -204,16 +204,18 @@ def main():
         description="GitLab group repository member cleanup script"
     )
     parser.add_argument(
-        "-u", "--gitlab-url", 
-        required=True,
-        help="The base URL of the GitLab instance")
-
-    parser.add_argument("-t", "--token", required=True, help="GitLab personal access token")
+        "-u", "--gitlab-url", required=True, help="The base URL of the GitLab instance"
+    )
 
     parser.add_argument(
-        "-g", "--group",
+        "-t", "--token", required=True, help="GitLab personal access token"
+    )
+
+    parser.add_argument(
+        "-g",
+        "--group",
         required=True,
-        help="The group ID or path for which to clean up repositories"
+        help="The group ID or path for which to clean up repositories",
     )
     parser.add_argument(
         "--dry-run",
@@ -229,9 +231,7 @@ def main():
     args = parser.parse_args()
 
     # Initialize GitLab connection
-    gl = gitlab.Gitlab(
-        args.gitlab_url, private_token=args.token, ssl_verify=False
-    )
+    gl = gitlab.Gitlab(args.gitlab_url, private_token=args.token, ssl_verify=False)
 
     # Run the member cleanup process
     remove_direct_members(gl, args.group, args.dry_run, args.exclude_users)
