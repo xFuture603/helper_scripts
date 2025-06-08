@@ -2,6 +2,8 @@
 
 This script recursively scans specified directories and deletes files matching a list of unwanted extensions. You can source unwanted extensions from a `sabnzbd.ini` configuration file or provide them directly as a comma-separated list. It supports dry-run mode and optional logging to a file. You can also call this script directly from your sabnzbd configuration.
 
+Note: By default, `sabnzbd` as options to remove files with unwanted extensions. This script is intended more as a complement, or if you load files from different sources.
+
 ## Use Cases
 
 Use this script to clean up completed or incomplete download directories, especially if you're using SABnzbd and want to remove files like `.exe`, `.lnk`, `.bat`, `.tmp`, etc., based on your configured unwanted extensions.
