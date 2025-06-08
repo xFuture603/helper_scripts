@@ -46,7 +46,7 @@ def setup_logging(logfile=None):
     logging.basicConfig(
         level=logging.INFO,
         format="%(asctime)s [%(levelname)s] %(message)s",
-        handlers=handlers
+        handlers=handlers,
     )
 
 
@@ -74,7 +74,9 @@ def parse_sabnzbd_extensions(config_path):
                 except ValueError:
                     logging.error("Malformed unwanted_extensions line: %s", line)
                     return []
-    logging.error("Could not find [misc] section or unwanted_extensions in %s", config_path)
+    logging.error(
+        "Could not find [misc] section or unwanted_extensions in %s", config_path
+    )
     return []
 
 
@@ -138,18 +140,25 @@ def main():
     parser.add_argument("--finished", help="Path to finished downloads folder")
     parser.add_argument("--incomplete", help="Path to incomplete downloads folder")
     group = parser.add_mutually_exclusive_group(required=True)
-    group.add_argument("--sabnzbd-config", help="Path to sabnzbd.ini to load unwanted_extensions")
     group.add_argument(
-        "--extensions", help="Comma-separated list of unwanted extensions (e.g., '*.exe,*.tmp')"
+        "--sabnzbd-config", help="Path to sabnzbd.ini to load unwanted_extensions"
     )
-    parser.add_argument("--dry-run", action="store_true", help="Log deletions without deleting")
+    group.add_argument(
+        "--extensions",
+        help="Comma-separated list of unwanted extensions (e.g., '*.exe,*.tmp')",
+    )
+    parser.add_argument(
+        "--dry-run", action="store_true", help="Log deletions without deleting"
+    )
     parser.add_argument("--logfile", help="Path to log file")
 
     args = parser.parse_args()
     setup_logging(args.logfile)
 
     if not args.finished and not args.incomplete:
-        logging.warning("Neither --finished nor --incomplete was provided. Nothing to scan.")
+        logging.warning(
+            "Neither --finished nor --incomplete was provided. Nothing to scan."
+        )
         sys.exit(0)
 
     if args.sabnzbd_config:
