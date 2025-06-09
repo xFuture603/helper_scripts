@@ -30,6 +30,7 @@ import sys
 # Example: HARDCODED_ARGS = ["--finished", "/path", "--extensions", "*.exe,*.nfo"]
 HARDCODED_ARGS = None
 
+
 def setup_logging(logfile=None):
     """
     Configure logging to console and optionally to a file.
