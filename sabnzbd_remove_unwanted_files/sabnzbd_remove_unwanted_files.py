@@ -26,6 +26,9 @@ import logging
 import os
 import sys
 
+# Optional: hardcoded arguments for SABnzbd integration
+# Example: HARDCODED_ARGS = ["--finished", "/path", "--extensions", "*.exe,*.nfo"]
+HARDCODED_ARGS = None
 
 def setup_logging(logfile=None):
     """
@@ -152,7 +155,10 @@ def main():
     )
     parser.add_argument("--logfile", help="Path to log file")
 
-    args = parser.parse_args()
+    if len(sys.argv) == 1 and HARDCODED_ARGS:
+        args = parser.parse_args(HARDCODED_ARGS)
+    else:
+        args = parser.parse_args()
     setup_logging(args.logfile)
 
     if not args.finished and not args.incomplete:
