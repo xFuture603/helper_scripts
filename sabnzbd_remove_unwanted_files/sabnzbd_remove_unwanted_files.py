@@ -56,32 +56,45 @@ def setup_logging(logfile=None):
 
 def parse_sabnzbd_extensions(config_path):
     """
-    Manually parse unwanted_extensions from sabnzbd.ini
-    while ignoring lines before the first section header.
-
-    Args:
-        config_path: Path to sabnzbd.ini file.
-
-    Returns:
-        List of extension patterns.
+    Parse unwanted_extensions from sabnzbd.ini, supporting multi-line values.
     """
     found_misc = False
+    collecting = False
+    ext_lines = []
+
     with open(config_path, "r", encoding="utf-8") as f:
         for line in f:
-            line = line.strip()
-            if line.lower() == "[misc]":
+            stripped = line.strip()
+
+            if stripped.lower() == "[misc]":
                 found_misc = True
-            elif found_misc and line.startswith("unwanted_extensions"):
-                try:
-                    _, ext_string = line.split("=", 1)
-                    return parse_extensions_string(ext_string.strip())
-                except ValueError:
-                    logging.error("Malformed unwanted_extensions line: %s", line)
-                    return []
-    logging.error(
-        "Could not find [misc] section or unwanted_extensions in %s", config_path
-    )
-    return []
+                continue
+
+            if not found_misc:
+                continue
+
+            if stripped.startswith("[") and stripped.endswith("]"):
+                # Reached a new section — stop collecting
+                break
+
+            if stripped.startswith("unwanted_extensions"):
+                # Start collecting multi-line value
+                collecting = True
+                _, first_part = stripped.split("=", 1)
+                ext_lines.append(first_part.strip())
+                continue
+
+            if collecting:
+                if "=" in stripped:  # reached another key
+                    break
+                ext_lines.append(stripped)
+
+    if not ext_lines:
+        logging.error("Could not find 'unwanted_extensions' in [misc] section.")
+        return []
+
+    full_ext_string = ",".join(ext_lines)
+    return parse_extensions_string(full_ext_string)
 
 
 def parse_extensions_string(ext_string):
@@ -170,6 +183,8 @@ def main():
 
     if args.sabnzbd_config:
         patterns = parse_sabnzbd_extensions(args.sabnzbd_config)
+        logging.info("Loaded %d unwanted extension patterns.", len(patterns))
+        logging.debug("Unwanted extensions: %s", ", ".join(patterns))
     else:
         patterns = parse_extensions_string(args.extensions)
 
