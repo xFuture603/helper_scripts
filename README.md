@@ -12,7 +12,7 @@ A collection of various helper scripts that I use.
 - [Remove directly added members which are also group members in GitLab](gitlab_remove_doubleton_members/README.md)
 - [Check multiple yaml files for duplicates and outsource them](yaml_deduplicate/README.md)
 - [Check GitLab repositories for older commits](gitlab_return_repositories_with_older_commits/README.md)
-- [Remove unwanted files, Sabnzbd downloaded from folders](gitlab_return_repositories_with_older_commits/README.md)
+- [Remove unwanted files, Sabnzbd downloaded from folders](sabnzbd_remove_unwanted_files/README.md)
 
 Note: Have a look at the README files in the specific subdirectories for documentation.
 
