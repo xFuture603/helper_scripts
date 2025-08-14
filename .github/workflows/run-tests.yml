@@ -18,7 +18,7 @@ jobs:
     steps:
     - uses: actions/checkout@v5
     - id: list-dirs
-      run: echo "dirs=$(ls -d tests/*/ | xargs -n 1 basename | jq -R . | jq -s .)" >> $GITHUB_OUTPUT
+      run: echo "dirs=$(find tests -mindepth 1 -maxdepth 1 -type d -exec basename {} \; | jq -R . | jq -s .)" >> $GITHUB_OUTPUT
 
   test:
     needs: list-tests
