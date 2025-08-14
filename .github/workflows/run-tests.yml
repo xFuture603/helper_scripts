@@ -65,4 +65,5 @@ jobs:
     - name: Test with pytest
       if: steps.changed-files.outputs.any_changed == 'true'
       run: |
+        export PYTHONPATH=$PYTHONPATH:.
         pytest tests/${{ matrix.script_dir }}

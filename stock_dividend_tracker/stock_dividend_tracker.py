@@ -1,8 +1,7 @@
 #!/usr/bin/env python3
 
 """
-A script to pull all known Ex-Dividend dates for given stocks through yahoo finance API 
-and display it in the terminal.
+A script to pull all known Ex-Dividend dates for given stocks through yahoo finance API.
 """
 
 from datetime import datetime
