@@ -13,6 +13,7 @@ A collection of various helper scripts that I use.
 - [Check multiple yaml files for duplicates and outsource them](yaml_deduplicate/README.md)
 - [Check GitLab repositories for older commits](gitlab_return_repositories_with_older_commits/README.md)
 - [Remove unwanted files, Sabnzbd downloaded from folders](sabnzbd_remove_unwanted_files/README.md)
+- [List blocked or banned GitLab Accounts within a specific group](gitlab_find_banned_and_blocked_accounts/README.md)
 
 Note: Have a look at the README files in the specific subdirectories for documentation.
 
