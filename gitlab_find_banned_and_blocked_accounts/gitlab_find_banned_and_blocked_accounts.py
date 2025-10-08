@@ -55,13 +55,11 @@ def collect_all_members(groups):
                 all_members[member.id] = {
                     "username": member.username,
                     "name": member.name,
-                    "groups": []
+                    "groups": [],
                 }
-            all_members[member.id]["groups"].append({
-                "id": group.id,
-                "name": group.name,
-                "full_path": group.full_path
-            })
+            all_members[member.id]["groups"].append(
+                {"id": group.id, "name": group.name, "full_path": group.full_path}
+            )
     return all_members
 
 
@@ -79,7 +77,7 @@ def filter_users_by_state(gl, members, state):
                     "username": user_detail.username,
                     "email": getattr(user_detail, "email", "N/A"),
                     "groups": member_info["groups"],
-                    "projects": []
+                    "projects": [],
                 }
         except gitlab.exceptions.GitlabGetError as err:
             logging.warning("Could not fetch user %d: %s", user_id, err)
@@ -102,11 +100,13 @@ def find_users_in_projects(gl, projects, target_users):
             members = get_paginated_data(full_project.members.list)
             for member in members:
                 if member.id in target_user_ids:
-                    target_users[member.id]["projects"].append({
-                        "id": full_project.id,
-                        "name": full_project.name,
-                        "path": full_project.path_with_namespace
-                    })
+                    target_users[member.id]["projects"].append(
+                        {
+                            "id": full_project.id,
+                            "name": full_project.name,
+                            "path": full_project.path_with_namespace,
+                        }
+                    )
         except gitlab.exceptions.GitlabGetError as err:
             logging.warning("Could not fetch project %d: %s", project.id, err)
 
@@ -132,8 +132,9 @@ def print_report(target_group, blocked_users, banned_users):
                 for group in user_info["groups"]:
                     print(f"     - {group['full_path']} (ID: {group['id']})")
             if user_info["projects"]:
-                unique_projects = {(p["id"], p["name"], p["path"])
-                                   for p in user_info["projects"]}
+                unique_projects = {
+                    (p["id"], p["name"], p["path"]) for p in user_info["projects"]
+                }
                 print(f"   Projects ({len(unique_projects)}):")
                 for pid, _, ppath in unique_projects:
                     print(f"     - {ppath} (ID: {pid})")
@@ -155,14 +156,20 @@ def main():
             "Examples:\n"
             "  %(prog)s -u https://gitlab.example.com -t my-gitlab-token -g my-group\n"
             "  %(prog)s -u https://gitlab.example.com -t my-gitlab-token -g 123"
-        )
+        ),
     )
-    parser.add_argument("-u", "--gitlab-url", required=True,
-                        help="The base URL of the GitLab instance.")
-    parser.add_argument("-t", "--token", required=True,
-                        help="GitLab personal access token.")
-    parser.add_argument("-g", "--group", required=True,
-                        help="The group ID or path to audit (e.g., 'my-group' or '123').")
+    parser.add_argument(
+        "-u", "--gitlab-url", required=True, help="The base URL of the GitLab instance."
+    )
+    parser.add_argument(
+        "-t", "--token", required=True, help="GitLab personal access token."
+    )
+    parser.add_argument(
+        "-g",
+        "--group",
+        required=True,
+        help="The group ID or path to audit (e.g., 'my-group' or '123').",
+    )
     args = parser.parse_args()
 
     gl = gitlab.Gitlab(args.gitlab_url, private_token=args.token, ssl_verify=False)
