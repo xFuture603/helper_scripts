@@ -49,7 +49,9 @@ def has_embedded_cover(album_dir: Path) -> bool:
             # MP3 files with ID3 tags
             if f.__class__.__name__ == "MP3":
                 if hasattr(f, "tags") and f.tags is not None:
-                    apics = [tag for tag in f.tags.values() if tag.FrameID.startswith("APIC")]
+                    apics = [
+                        tag for tag in f.tags.values() if tag.FrameID.startswith("APIC")
+                    ]
                     if apics:
                         return True
 
@@ -57,7 +59,9 @@ def has_embedded_cover(album_dir: Path) -> bool:
             elif f.__class__.__name__ == "FLAC":
                 if hasattr(f, "pictures") and f.pictures:
                     return True
-                if hasattr(f.tags, "getall") and f.tags.getall("METADATA_BLOCK_PICTURE"):
+                if hasattr(f.tags, "getall") and f.tags.getall(
+                    "METADATA_BLOCK_PICTURE"
+                ):
                     return True
 
             # MP4/M4A files
@@ -78,7 +82,9 @@ def main():
     )
     parser.add_argument("music_root", type=str, help="Root path of your music library")
     parser.add_argument(
-        "--physical", action="store_true", help="Scan for physical cover image files only"
+        "--physical",
+        action="store_true",
+        help="Scan for physical cover image files only",
     )
     parser.add_argument(
         "--embedded", action="store_true", help="Scan for embedded cover art only"
@@ -132,7 +138,7 @@ def main():
                 missing_embedded.append(album_dir)
 
     # Summary
-    print("\n" + "="*50 + "\nScan Summary:")
+    print("\n" + "=" * 50 + "\nScan Summary:")
     if missing_physical:
         print(f"\nAlbums missing physical covers ({len(missing_physical)}):")
         for album in missing_physical:
