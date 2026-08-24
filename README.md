@@ -15,6 +15,7 @@ A collection of various helper scripts that I use.
 - [Remove unwanted files, Sabnzbd downloaded from folders](sabnzbd_remove_unwanted_files/README.md)
 - [List blocked or banned GitLab Accounts within a specific group](gitlab_find_banned_and_blocked_accounts/README.md)
 - [Find missing Album Cover Art](find_missing_album_cover_art/README.md)
+- [Send batched Telegram notifications for Sabnzbd events](sabnzbd_notify_telegram/README.md)
 
 Note: Have a look at the README files in the specific subdirectories for documentation.
 
