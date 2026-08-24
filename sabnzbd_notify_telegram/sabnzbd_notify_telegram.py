@@ -61,10 +61,9 @@ KIND_LABELS = (
 # Configure logging. The flusher runs detached with stdout closed, so stderr is
 # the only channel whose output still reaches "docker logs sabnzbd".
 logging.basicConfig(
-    level=logging.INFO,
-    format="%(asctime)s [%(levelname)s] %(message)s",
-    stream=sys.stderr,
+    level=logging.INFO, format="%(asctime)s [%(levelname)s] %(message)s"
 )
+logger = logging.getLogger(__name__)
 
 
 def get_series_key(name):
@@ -135,7 +134,7 @@ def get_queue():
             return json.load(response)["queue"]
     except (OSError, ValueError, KeyError) as err:
         # An unreadable queue must not hold notifications hostage
-        logging.warning("Could not read the SABnzbd queue: %s", err)
+        logger.warning("Could not read the SABnzbd queue: %s", err)
         return {}
 
 
@@ -188,7 +187,7 @@ def send_telegram_message(text):
     """Send one plain-text message to the configured Telegram chat."""
     parameters = os.environ.get("SAB_NOTIFICATION_PARAMETERS", "").split()
     if len(parameters) != 2:
-        logging.error(
+        logger.error(
             "Set Parameters in Config->Notifications to: <bot_token> <chat_id>"
         )
         sys.exit(1)
@@ -252,37 +251,38 @@ def send_notifications(events, queue):
         elif kind != "start":
             text += "\n⏳ Queue empty"
 
-        logging.info("Sending %s notification for %d download(s)", kind, len(names))
+        logger.info("Sending %s notification for %d download(s)", kind, len(names))
         send_telegram_message(text)
 
 
 def flush_spool():
     """Wait for a quiet period, then send everything the queue has released."""
-    lock = open(FLUSH_LOCK, "w", encoding="utf-8")
-    try:
-        fcntl.flock(lock, fcntl.LOCK_EX | fcntl.LOCK_NB)
-    except OSError:
-        return  # a flusher is already waiting; our event joins its batch
+    with open(FLUSH_LOCK, "w", encoding="utf-8") as lock:
+        try:
+            fcntl.flock(lock, fcntl.LOCK_EX | fcntl.LOCK_NB)
+        except OSError:
+            return  # a flusher is already waiting; our event joins its batch
 
-    deadline = time.time() + MAX_WAIT_SECONDS
-    while (
-        time.time() < deadline and time.time() - get_last_event_time() < QUIET_SECONDS
-    ):
-        time.sleep(min(QUIET_SECONDS, 5))
+        deadline = time.time() + MAX_WAIT_SECONDS
+        while (
+            time.time() < deadline
+            and time.time() - get_last_event_time() < QUIET_SECONDS
+        ):
+            time.sleep(min(QUIET_SECONDS, 5))
 
-    events = drain_spool()
-    if not events:
-        return
+        events = drain_spool()
+        if not events:
+            return
 
-    queue = get_queue()
-    finished = [event["name"] for event in events if event["kind"] != "start"]
-    ready, held = split_ready_events(events, get_pending_series(queue, finished))
-    spool_events(held)
-    # ponytail: held events (and anything spooled while we send) wait for the next
-    # event's flusher rather than a polling daemon. The last episode of a series
-    # always produces one, so the common case releases on time.
-    if ready:
-        send_notifications(ready, queue)
+        queue = get_queue()
+        finished = [event["name"] for event in events if event["kind"] != "start"]
+        ready, held = split_ready_events(events, get_pending_series(queue, finished))
+        spool_events(held)
+        # ponytail: held events (and anything spooled while we send) wait for the next
+        # event's flusher rather than a polling daemon. The last episode of a series
+        # always produces one, so the common case releases on time.
+        if ready:
+            send_notifications(ready, queue)
 
 
 def main():
